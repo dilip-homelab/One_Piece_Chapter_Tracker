@@ -16,6 +16,15 @@ This little Python script runs quietly in the background on my Raspberry Pi 5, c
 
 ---
 
+
+## What the notification looks like
+
+When a new chapter drops, you get an email straight to your inbox:
+![[One_piece_manga_email.png]]
+Clean and simple — just the chapter name, right when it's out.
+
+---
+
 ## Why TCB Scans?
 
 TCB Scans translates One Piece from Japanese to English and releases chapters faster than the official sources. So if you want to read it as early as possible, that's the place to go.
@@ -83,23 +92,18 @@ Create a file called `.env` in the project folder:
 
 ```
 RESEND_API_KEY=your_actual_api_key_here
+RECIPIENT_EMAIL=your_email@gmail.com
 ```
 
-> ⚠️ **Never share or commit your API key.** The `.env` file is already in `.gitignore` for this reason.
+Both your API key and your email address live here — nothing personal is hardcoded in the script itself.
 
-The script loads this automatically using `python-dotenv` — no need to export it manually every time.
+> ⚠️ **Never share or commit this file.** The `.env` is already in `.gitignore` so git will ignore it automatically.
 
-### 6. Update the email address in the script
+The script loads it all automatically using `python-dotenv` — no manual exporting needed.
 
-Open `one_piece_tracker.py` and find this line:
+### 6. Update the sender address (optional)
 
-```python
-"to": ["dilipepparapalli@gmail.com"],
-```
-
-Replace it with your own email address.
-
-Also update the `"from"` address once you have a verified sender domain in Resend. Until then, `onboarding@resend.dev` works for testing.
+The `"from"` address is currently set to `onboarding@resend.dev`, which is Resend's default for testing. Once you have a verified sender domain in Resend, update that line in `one_piece_tracker.py`. Until then it works fine as-is.
 
 ---
 
@@ -165,25 +169,20 @@ Once the shell script works, open your cron schedule:
 crontab -e
 ```
 
-Add these lines to run the tracker every few hours throughout the day:
+Add this single line to run the tracker every hour, every day:
 
 ```
-0 2  * * * /home/YOUR_USERNAME/Documents/one_piece_manga_tracker/run_tracker.sh
-0 6  * * * /home/YOUR_USERNAME/Documents/one_piece_manga_tracker/run_tracker.sh
-0 10 * * * /home/YOUR_USERNAME/Documents/one_piece_manga_tracker/run_tracker.sh
-0 14 * * * /home/YOUR_USERNAME/Documents/one_piece_manga_tracker/run_tracker.sh
-0 16 * * * /home/YOUR_USERNAME/Documents/one_piece_manga_tracker/run_tracker.sh
-0 20 * * * /home/YOUR_USERNAME/Documents/one_piece_manga_tracker/run_tracker.sh
+0 * * * * /home/YOUR_USERNAME/Documents/one_piece_manga_tracker/run_tracker.sh
 ```
 
 **Cron format explained:**
 
 ```
 minute  hour  day-of-month  month  day-of-week  command
-  0      6        *            *        *         /path/to/run_tracker.sh
+  0      *        *            *        *         /path/to/run_tracker.sh
 ```
 
-So `0 6 * * *` means: run at 6:00 AM, every day.
+The `0` in the minute position means "at the top of the hour". The `*` in the hour position means "every hour". So this fires at 1:00, 2:00, 3:00... all 24 hours, every day. One line is all you need.
 
 Verify it was saved:
 

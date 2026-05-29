@@ -14,6 +14,9 @@ load_dotenv()
 # Set the Resend API key from the environment variable — never hardcode this
 resend.api_key = os.environ["RESEND_API_KEY"]
 
+# Your email address, loaded from .env so it's not hardcoded in the script
+RECIPIENT_EMAIL = os.environ["RECIPIENT_EMAIL"]
+
 # The TCB Scans page that lists all One Piece chapters
 URL = "https://tcbonepiecechapters.com/mangas/5/one-piece"
 
@@ -98,7 +101,7 @@ def send_email(chapter_name):
     params = {
         # Note: replace this with your own verified sender address from Resend
         "from": "onboarding@resend.dev",
-        "to": ["dilipepparapalli@gmail.com"],
+        "to": [RECIPIENT_EMAIL],  # Loaded from .env — no personal info hardcoded
         "subject": "New One Piece Chapter Released!",
         "html": f"<strong>New chapter released:</strong><p>{chapter_name}</p>",
     }
